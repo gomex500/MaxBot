@@ -65,7 +65,7 @@ mysql-connector-python==8.0.33
 nest-asyncio==1.6.0
 nltk==3.8.1
 numpy==1.21.6
-orjson==3.10.6
+orjson==3.9.7
 packaging==23.1
 pillow==10.4.0
 Pint==0.18
