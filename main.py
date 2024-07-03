@@ -1,83 +1,65 @@
-from cgitb import text
-from distutils.log import debug
-from flask import Flask, request, jsonify, redirect
-from flask_cors import CORS
-from chatterbot import ChatBot
-from chatterbot.trainers import ListTrainer
-# import string
+from flask import Flask, request, jsonify
+from multiprocessing import context
+from g4f.client import Client
 import json
-import convertation as cv
-import re
-import unidecode
-
-chatbot = ChatBot("Max")
-
-preguntas = []
-# Función que carga las preguntas anteriores desde el JSON
-def cargar_preguntas():
-    try:
-        with open('preguntas_no_respondidas.json', 'r') as file:
-            preguntas = json.load(file)
-    except FileNotFoundError:
-        preguntas = []
-    return preguntas
-
-# Función que guarda las preguntas no respondidas en el JSON
-def guardar_preguntas(preguntas):
-    with open('preguntas_no_respondidas.json', 'w') as file:
-        json.dump(preguntas, file)
-
-# Función que procesa la pregunta antes de ingresarla convirtiendo a minúscula y quitando los signos de puntuación
-def procesar_pregunta(texto):
-    texto = texto.lower()
-    #eliminando todos los signos menos los acentos
-    texto_sin_signos = re.sub(r'[^\w\s]','', texto)
-    #eliminando los acentos
-    texto_sin_acentos = unidecode.unidecode(texto_sin_signos)
-    #eliminando el ultimo espacio si lo tienen
-    texto_sin_espacios = texto_sin_acentos.rstrip()
-    # print(texto_sin_espacios)
-    return texto_sin_espacios
-
-# Inicializando y entrenando el bot
-trainer = ListTrainer(chatbot)
-trainer.train(cv.conversation)
 
 
 app = Flask(__name__)
-CORS(app)
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    # Lógica para procesar la solicitud POST
-    data = request.get_json()
-    user_input = data['input']
-    pre = procesar_pregunta(user_input)
-    response = chatbot.get_response(pre)
-    # print(pregunta)
-    no_entendido = 'No entiendo tu pregunta'
-    if response.confidence < 0.5:
-        preguntas.append(pre)
-        guardar_preguntas(preguntas)
-        return jsonify({'response': str(no_entendido)})
-    else:
-        return jsonify({'response': str(response)})
+client = Client()
 
-# Ruta de bienvenida
 @app.route('/')
 def welcome():
     return '¡Hola, soy HydroBot!'
 
-@app.route('/preguntas')
-def obtener_preguntas():
-    return jsonify({'preguntas': preguntas})
+@app.route('/chat', methods=['POST'])
+def chat():
+    
+    user_question = request.json.get('input')
 
-@app.before_request
-def guardar_preguntas_sqlite():
-    guardar_preguntas(preguntas)  # Guardar las preguntas no respondidas en la base de datos SQLite antes de cada solicitud
+    # Definir el contexto y el prompt con ejemplos específicos
+    context = """
+    Eres un chatbot tu nombre es HydroBot con inteligencia artificial de GPT-4 entrenado por Freddy Gomez. Solo hablas español y tus únicos conocimientos son sobre el forraje hidropónico y el humus de lombriz. Estos dos temas ayudan en el contexto de Nicaragua para superar la problemática de la escasez de agua y la necesidad de producción constante de alimento para el ganado. El cultivo de forraje hidropónico permite a los ganaderos producir alimento nutritivo en un ambiente controlado, sin depender de la disponibilidad de agua de lluvia. El forraje hidropónico puede ser cultivado en sistemas cerrados, utilizando tecnologías que optimizan el uso del agua y regulan las condiciones de temperatura, permitiendo así el suministro constante de alimento para el ganado, incluso durante la sequía y las altas temperaturas.
 
+    Ejemplo 1:
+    Usuario: ¿Cómo se cultiva el forraje hidropónico?
+    Bot: El forraje hidropónico se cultiva en sistemas cerrados que utilizan una solución nutritiva en lugar de tierra. Este método permite optimizar el uso del agua y controlar las condiciones de crecimiento.
+
+    Ejemplo 2:
+    Usuario: ¿Qué beneficios tiene el humus de lombriz?
+    Bot: El humus de lombriz mejora la fertilidad del suelo, aumentando la disponibilidad de nutrientes para las plantas y mejorando la estructura del suelo.
+
+    Ejemplo 3:
+    Usuario: ¿Cómo ayuda el forraje hidropónico en épocas de sequía?
+    Bot: El forraje hidropónico permite la producción constante de alimento en un ambiente controlado, sin depender de la disponibilidad de agua de lluvia, lo que es crucial durante las épocas de sequía.
+
+    Ejemplo 4:
+    Usuario: ¿Qué debo estudiar para ser ingeniero?
+    Bot: Solo tengo información sobre forraje hidropónico y humus de lombriz. Pregúntame sobre estos temas.
+
+    Ahora es tu turno:
+    Usuario: {}
+    """
+
+    prompt = context + f"\nUsuario: {user_question}\n"
+
+    # Llamar al método de creación de completions
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+
+    bot_response = response.choices[0].message.content
+
+    # Crear una respuesta en formato JSON
+    response_json = {
+        "question": user_question,
+        "response": bot_response
+    }
+
+    return jsonify(response_json)
+
+# Ejecutar la aplicación Flask
 if __name__ == '__main__':
-    # Cargando las preguntas no respondidas desde JSON
-    preguntas = cargar_preguntas()
-
-    app.run()
+    app.run(debug=True)
