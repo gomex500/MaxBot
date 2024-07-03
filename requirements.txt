@@ -12,7 +12,7 @@ blis==0.2.4
 bottle==0.12.25
 Brotli==1.1.0
 browser-cookie3==0.19.1
-cairocffi==1.7.1
+cairocffi==1.6.1
 CairoSVG==2.7.1
 certifi==2024.6.2
 cffi==1.16.0
