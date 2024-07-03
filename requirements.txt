@@ -55,7 +55,7 @@ jsonschema==4.17.3
 loguru==0.7.2
 lxml==5.2.2
 lz4==4.3.2
-markdown-it-py==3.0.0
+markdown-it-py==2.2.0
 MarkupSafe==2.1.2
 mathparse==0.1.2
 mdurl==0.1.2
