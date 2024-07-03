@@ -22,7 +22,7 @@ chatterbot-corpus==1.2.0
 click==8.1.7
 cryptography==42.0.8
 cssselect2==0.7.0
-curl_cffi==0.6.4
+curl-cffi==0.5.7
 cymem==2.0.7
 defusedxml==0.7.1
 dnspython==2.6.1
