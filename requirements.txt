@@ -76,7 +76,7 @@ plyer==2.1.0
 preshed==2.0.1
 protobuf==3.20.3
 proxy-tools==0.1.0
-pycparser==2.22
+pycparser==2.21
 pycryptodome==3.20.0
 pycryptodomex==3.20.0
 pydantic==2.8.0
