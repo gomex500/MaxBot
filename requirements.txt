@@ -87,7 +87,7 @@ pymongo==3.13.0
 pyrsistent==0.19.3
 python-dateutil==2.7.5
 python-dotenv==0.21.1
-python-multipart==0.0.9
+python-multipart==0.0.8
 python-socks==2.5.0
 pytz==2023.3
 pywebview==5.1
