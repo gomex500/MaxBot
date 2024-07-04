@@ -79,8 +79,8 @@ proxy-tools==0.1.0
 pycparser==2.21
 pycryptodome==3.20.0
 pycryptodomex==3.20.0
-pydantic==2.8.0
-pydantic_core==2.20.0
+pydantic==2.5.3
+pydantic_core==2.14.6
 PyExecJS==1.5.1
 Pygments==2.18.0
 pymongo==3.13.0
