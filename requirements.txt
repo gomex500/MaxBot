@@ -84,7 +84,7 @@ pydantic_core==2.14.6
 PyExecJS==1.5.1
 Pygments==2.17.2
 pymongo==3.13.0
-pyreqwest_impersonate==0.4.8
+pyreqwest_impersonate==0.4.9
 pyrsistent==0.19.3
 python-dateutil==2.7.5
 python-dotenv==1.0.1
