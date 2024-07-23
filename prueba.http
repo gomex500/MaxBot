@@ -1,0 +1,12 @@
+@api = http://127.0.0.1:5000
+
+###
+GET {{api}}
+
+####
+POST {{api}}/chat
+Content-Type: application/json
+
+{
+    "input":"hola"
+}
